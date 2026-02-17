@@ -884,16 +884,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expo/styleguide-cookie-consent@npm:^0.1.3":
-  version: 0.1.3
-  resolution: "@expo/styleguide-cookie-consent@npm:0.1.3"
+"@expo/styleguide-cookie-consent@npm:^0.1.4":
+  version: 0.1.4
+  resolution: "@expo/styleguide-cookie-consent@npm:0.1.4"
   dependencies:
     "@c15t/react": "npm:^1.8.3"
     "@c15t/scripts": "npm:^1.0.1"
   peerDependencies:
     "@expo/styleguide": ">= 9"
     react: ">= 19"
-  checksum: 10c0/9ed88281a81678f8df04df6ee80772b8006e306b497b980038677c46add4fdb0de69d0224acee76adb3d2a56fc6b2387678ee86600c5694693856729033f6b47
+  checksum: 10c0/b5d62880feef6219ac4597ab5a9a235de82bee842d1187d35eaa5654d150319773a6bff4ad19e7520ab8a9f36bfb61edeccbd4cb0c90c0174d20ec0e2db08c1e
   languageName: node
   linkType: hard
 
@@ -8590,7 +8590,7 @@ __metadata:
     "@expo/spawn-async": "npm:^1.7.2"
     "@expo/styleguide": "npm:^9.3.1"
     "@expo/styleguide-base": "npm:^2.0.5"
-    "@expo/styleguide-cookie-consent": "npm:^0.1.3"
+    "@expo/styleguide-cookie-consent": "npm:^0.1.4"
     "@expo/styleguide-icons": "npm:^2.3.4"
     "@expo/styleguide-search-ui": "npm:^3.3.1"
     "@kapaai/react-sdk": "npm:^0.9.0"
