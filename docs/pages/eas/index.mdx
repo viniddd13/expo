@@ -1,69 +1,758 @@
----
-title: Expo Application Services
-sidebar_title: Introduction
-hideTOC: true
-description: Learn about Expo Application Services (EAS) for Expo and React Native apps.
----
+#!/bin/bash
 
-import { BuildIcon } from '@expo/styleguide-icons/custom/BuildIcon';
-import { EasMetadataIcon } from '@expo/styleguide-icons/custom/EasMetadataIcon';
-import { EasSubmitIcon } from '@expo/styleguide-icons/custom/EasSubmitIcon';
-import { Cloud01Icon } from '@expo/styleguide-icons/outline/Cloud01Icon';
-import { DataIcon } from '@expo/styleguide-icons/outline/DataIcon';
-import { Dataflow03Icon } from '@expo/styleguide-icons/outline/Dataflow03Icon';
-import { LayersTwo02Icon } from '@expo/styleguide-icons/outline/LayersTwo02Icon';
+# =============================================================================
+# LegalTech - Master Deployment Script
+# Configura infraestrutura AWS + Build e Deploy do App Mobile
+# =============================================================================
 
-import { BoxLink } from '~/ui/components/BoxLink';
+set -e
 
-Expo Application Services (EAS) are deeply integrated cloud services for Expo and React Native apps, from the team behind Expo.
+# Cores
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+MAGENTA='\033[0;35m'
+CYAN='\033[0;36m'
+NC='\033[0m'
 
-Read the full pitch at [expo.dev/eas](https://expo.dev/eas), or follow the links below to learn how to get started.
+# Variáveis globais
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+TERRAFORM_DIR="$PROJECT_ROOT/terraform"
+LOG_FILE="$PROJECT_ROOT/deployment.log"
 
-<BoxLink
-  title="EAS Workflows"
-  description="Automate your development and release workflows with CI/CD jobs."
-  href="/eas/workflows/introduction/"
-  Icon={Dataflow03Icon}
-/>
+# Funções de logging
+log() {
+    echo -e "${GREEN}[$(date +'%Y-%m-%d %H:%M:%S')]${NC} $1" | tee -a "$LOG_FILE"
+}
 
-<BoxLink
-  title="EAS Build"
-  description="Compile and sign Android/iOS apps with custom native code in the cloud."
-  href="/build/introduction"
-  Icon={BuildIcon}
-/>
+log_error() {
+    echo -e "${RED}[$(date +'%Y-%m-%d %H:%M:%S')] ERROR:${NC} $1" | tee -a "$LOG_FILE"
+}
 
-<BoxLink
-  title="EAS Submit"
-  description="Upload your app to the Google Play Store or Apple App Store from the cloud with one CLI command."
-  href="/submit/introduction"
-  Icon={EasSubmitIcon}
-/>
+log_warning() {
+    echo -e "${YELLOW}[$(date +'%Y-%m-%d %H:%M:%S')] WARNING:${NC} $1" | tee -a "$LOG_FILE"
+}
 
-<BoxLink
-  title="EAS Hosting"
-  description="Deploy Expo Router and React Native web apps and API routes."
-  href="/eas/hosting/introduction"
-  Icon={Cloud01Icon}
-/>
+log_info() {
+    echo -e "${BLUE}[$(date +'%Y-%m-%d %H:%M:%S')] INFO:${NC} $1" | tee -a "$LOG_FILE"
+}
 
-<BoxLink
-  title="EAS Update"
-  description="Address small bugs and push quick fixes directly to end users."
-  href="/eas-update/introduction"
-  Icon={LayersTwo02Icon}
-/>
+log_success() {
+    echo -e "${GREEN}[$(date +'%Y-%m-%d %H:%M:%S')] SUCCESS:${NC} $1" | tee -a "$LOG_FILE"
+}
 
-<BoxLink
-  title="EAS Metadata (in preview)"
-  description="Upload all app store information required to get your app published."
-  href="/eas/metadata/"
-  Icon={EasMetadataIcon}
-/>
+# Banner
+show_banner() {
+    clear
+    echo -e "${CYAN}"
+    cat << "EOF"
+╔═══════════════════════════════════════════════════════════════╗
+║                                                               ║
+║                    LEGALTECH DEPLOYMENT                       ║
+║                                                               ║
+║          Infraestrutura AWS + Mobile App Builder             ║
+║                                                               ║
+╚═══════════════════════════════════════════════════════════════╝
+EOF
+    echo -e "${NC}\n"
+}
 
-<BoxLink
-  title="EAS Insights (in preview)"
-  description="View analytics about a project's performance, usage, and reach."
-  href="/eas-insights/introduction/"
-  Icon={DataIcon}
-/>
+# Menu principal
+show_menu() {
+    echo -e "${CYAN}╔═══════════════════════════════════════════════════════════════╗${NC}"
+    echo -e "${CYAN}║                      OPÇÕES DE DEPLOY                         ║${NC}"
+    echo -e "${CYAN}╠═══════════════════════════════════════════════════════════════╣${NC}"
+    echo -e "${CYAN}║${NC}  1) 🏗️  Deploy Completo (Infraestrutura + App)              ${CYAN}║${NC}"
+    echo -e "${CYAN}║${NC}  2) ☁️  Deploy apenas Infraestrutura AWS                    ${CYAN}║${NC}"
+    echo -e "${CYAN}║${NC}  3) 📱 Build e Deploy apenas App Mobile                     ${CYAN}║${NC}"
+    echo -e "${CYAN}║${NC}  4) 🔧 Setup Inicial (Instalar dependências)                ${CYAN}║${NC}"
+    echo -e "${CYAN}║${NC}  5) 🧪 Ambiente de Desenvolvimento (Dev)                     ${CYAN}║${NC}"
+    echo -e "${CYAN}║${NC}  6) 🎯 Ambiente de Staging                                   ${CYAN}║${NC}"
+    echo -e "${CYAN}║${NC}  7) 🚀 Ambiente de Produção                                  ${CYAN}║${NC}"
+    echo -e "${CYAN}║${NC}  8) 🗑️  Destruir Infraestrutura                              ${CYAN}║${NC}"
+    echo -e "${CYAN}║${NC}  9) 📊 Status dos Recursos                                   ${CYAN}║${NC}"
+    echo -e "${CYAN}║${NC}  0) ❌ Sair                                                   ${CYAN}║${NC}"
+    echo -e "${CYAN}╚═══════════════════════════════════════════════════════════════╝${NC}\n"
+}
+
+# =============================================================================
+# FUNÇÕES DE VERIFICAÇÃO
+# =============================================================================
+
+check_prerequisites() {
+    log_info "Verificando pré-requisitos..."
+    
+    local missing_tools=()
+    
+    # Node.js
+    if ! command -v node &> /dev/null; then
+        missing_tools+=("Node.js (https://nodejs.org)")
+    else
+        log_success "✓ Node.js $(node -v)"
+    fi
+    
+    # npm
+    if ! command -v npm &> /dev/null; then
+        missing_tools+=("npm")
+    else
+        log_success "✓ npm $(npm -v)"
+    fi
+    
+    # Terraform
+    if ! command -v terraform &> /dev/null; then
+        missing_tools+=("Terraform (https://www.terraform.io)")
+    else
+        log_success "✓ Terraform $(terraform version | head -n1)"
+    fi
+    
+    # AWS CLI
+    if ! command -v aws &> /dev/null; then
+        missing_tools+=("AWS CLI (https://aws.amazon.com/cli)")
+    else
+        log_success "✓ AWS CLI $(aws --version | cut -d' ' -f1)"
+    fi
+    
+    # EAS CLI (Expo)
+    if ! command -v eas &> /dev/null; then
+        log_warning "⚠ EAS CLI não instalado (necessário para builds)"
+        read -p "Deseja instalar agora? (y/n): " install_eas
+        if [[ $install_eas == "y" ]]; then
+            npm install -g eas-cli
+        else
+            missing_tools+=("EAS CLI (npm install -g eas-cli)")
+        fi
+    else
+        log_success "✓ EAS CLI instalado"
+    fi
+    
+    # Git
+    if ! command -v git &> /dev/null; then
+        missing_tools+=("Git")
+    else
+        log_success "✓ Git $(git --version | cut -d' ' -f3)"
+    fi
+    
+    # Verificar se há ferramentas faltando
+    if [ ${#missing_tools[@]} -gt 0 ]; then
+        log_error "Ferramentas faltando:"
+        for tool in "${missing_tools[@]}"; do
+            echo "  - $tool"
+        done
+        return 1
+    fi
+    
+    log_success "Todos os pré-requisitos instalados!"
+    return 0
+}
+
+check_aws_credentials() {
+    log_info "Verificando credenciais AWS..."
+    
+    if ! aws sts get-caller-identity &> /dev/null; then
+        log_error "Credenciais AWS não configuradas"
+        echo ""
+        echo "Configure com: aws configure"
+        echo "Você precisará de:"
+        echo "  - AWS Access Key ID"
+        echo "  - AWS Secret Access Key"
+        echo "  - Região padrão (ex: us-east-1)"
+        return 1
+    fi
+    
+    local account_id=$(aws sts get-caller-identity --query Account --output text)
+    local user=$(aws sts get-caller-identity --query Arn --output text)
+    
+    log_success "✓ AWS Account ID: $account_id"
+    log_success "✓ AWS User: $user"
+    return 0
+}
+
+check_expo_account() {
+    log_info "Verificando conta Expo..."
+    
+    if ! eas whoami &> /dev/null; then
+        log_warning "Não está logado no Expo"
+        read -p "Deseja fazer login agora? (y/n): " login_expo
+        if [[ $login_expo == "y" ]]; then
+            eas login
+        else
+            log_error "Login no Expo necessário para builds"
+            return 1
+        fi
+    else
+        local expo_user=$(eas whoami)
+        log_success "✓ Logado como: $expo_user"
+    fi
+    
+    return 0
+}
+
+# =============================================================================
+# FUNÇÕES DE CONFIGURAÇÃO
+# =============================================================================
+
+setup_environment() {
+    local env=$1
+    log_info "Configurando ambiente: $env"
+    
+    # Criar arquivo .env se não existir
+    if [ ! -f "$PROJECT_ROOT/.env" ]; then
+        log_info "Criando arquivo .env..."
+        cp "$PROJECT_ROOT/.env.example" "$PROJECT_ROOT/.env"
+        
+        # Perguntar informações importantes
+        read -p "Digite a URL da API (ex: https://api.legaltech.com.br): " api_url
+        sed -i.bak "s|API_BASE_URL=.*|API_BASE_URL=$api_url|g" "$PROJECT_ROOT/.env"
+        
+        log_success "Arquivo .env criado"
+    fi
+    
+    # Configurar Terraform variables
+    local tfvars_file="$TERRAFORM_DIR/environments/$env/terraform.tfvars"
+    
+    if [ ! -f "$tfvars_file" ]; then
+        log_info "Criando terraform.tfvars para $env..."
+        
+        mkdir -p "$TERRAFORM_DIR/environments/$env"
+        
+        cat > "$tfvars_file" << EOF
+# Configuração do ambiente $env
+environment = "$env"
+project_name = "legaltech"
+aws_region = "us-east-1"
+
+# Email do responsável
+owner_email = "admin@legaltech.com.br"
+
+# Configurações de rede
+vpc_cidr = "10.0.0.0/16"
+
+# Configurações de compute
+ecs_min_capacity = $([ "$env" == "prod" ] && echo "3" || echo "1")
+ecs_max_capacity = $([ "$env" == "prod" ] && echo "10" || echo "5")
+ecs_desired_capacity = $([ "$env" == "prod" ] && echo "3" || echo "2")
+
+# Configurações de banco
+rds_instance_class = "$([ "$env" == "prod" ] && echo "db.r6g.large" || echo "db.t4g.medium")"
+elasticache_node_type = "$([ "$env" == "prod" ] && echo "cache.r6g.large" || echo "cache.t4g.medium")"
+
+# Features
+enable_multi_region_dr = $([ "$env" == "prod" ] && echo "true" || echo "false")
+enable_guardduty = $([ "$env" == "prod" ] && echo "true" || echo "false")
+enable_xray = true
+
+# Domain
+domain_name = "$([ "$env" == "prod" ] && echo "legaltech.com.br" || echo "$env.legaltech.com.br")"
+create_route53_zone = $([ "$env" == "prod" ] && echo "true" || echo "false")
+EOF
+        
+        log_success "terraform.tfvars criado para $env"
+    fi
+    
+    # Backend configuration
+    local backend_file="$TERRAFORM_DIR/environments/$env/backend.tf"
+    
+    if [ ! -f "$backend_file" ]; then
+        log_info "Criando backend.tf para $env..."
+        
+        cat > "$backend_file" << EOF
+terraform {
+  backend "s3" {
+    bucket         = "legaltech-terraform-state-$env"
+    key            = "terraform.tfstate"
+    region         = "us-east-1"
+    encrypt        = true
+    dynamodb_table = "legaltech-terraform-locks-$env"
+  }
+}
+EOF
+        
+        log_success "backend.tf criado para $env"
+        
+        # Criar bucket S3 e tabela DynamoDB para state
+        log_info "Criando recursos para Terraform state..."
+        
+        aws s3 mb "s3://legaltech-terraform-state-$env" --region us-east-1 2>/dev/null || true
+        aws s3api put-bucket-versioning \
+            --bucket "legaltech-terraform-state-$env" \
+            --versioning-configuration Status=Enabled 2>/dev/null || true
+        
+        aws dynamodb create-table \
+            --table-name "legaltech-terraform-locks-$env" \
+            --attribute-definitions AttributeName=LockID,AttributeType=S \
+            --key-schema AttributeName=LockID,KeyType=HASH \
+            --billing-mode PAY_PER_REQUEST \
+            --region us-east-1 2>/dev/null || true
+        
+        log_success "Recursos de state criados"
+    fi
+}
+
+# =============================================================================
+# FUNÇÕES DE TERRAFORM
+# =============================================================================
+
+terraform_init() {
+    local env=$1
+    log_info "Inicializando Terraform para $env..."
+    
+    cd "$TERRAFORM_DIR"
+    
+    # Copiar configuração do ambiente
+    rm -f terraform.tfvars backend.tf
+    ln -sf "environments/$env/terraform.tfvars" terraform.tfvars
+    ln -sf "environments/$env/backend.tf" backend.tf
+    
+    terraform init -upgrade
+    
+    log_success "Terraform inicializado"
+}
+
+terraform_plan() {
+    local env=$1
+    log_info "Gerando plano Terraform para $env..."
+    
+    cd "$TERRAFORM_DIR"
+    
+    terraform plan -out="$env.tfplan"
+    
+    log_success "Plano gerado: $env.tfplan"
+}
+
+terraform_apply() {
+    local env=$1
+    log_info "Aplicando infraestrutura para $env..."
+    
+    cd "$TERRAFORM_DIR"
+    
+    if [ -f "$env.tfplan" ]; then
+        terraform apply "$env.tfplan"
+    else
+        terraform apply -auto-approve
+    fi
+    
+    # Salvar outputs
+    terraform output -json > "$PROJECT_ROOT/terraform-outputs-$env.json"
+    
+    log_success "Infraestrutura aplicada!"
+    
+    # Mostrar informações importantes
+    echo -e "\n${CYAN}═══════════════════════════════════════════════════════${NC}"
+    echo -e "${GREEN}📊 INFORMAÇÕES DA INFRAESTRUTURA${NC}"
+    echo -e "${CYAN}═══════════════════════════════════════════════════════${NC}"
+    
+    echo -e "\n${YELLOW}ALB DNS:${NC}"
+    terraform output alb_dns_name
+    
+    echo -e "\n${YELLOW}ECR Repositories:${NC}"
+    terraform output ecr_repository_urls
+    
+    echo -e "\n${YELLOW}RDS Endpoint:${NC}"
+    terraform output rds_cluster_endpoint
+    
+    echo -e "\n${YELLOW}CloudWatch Dashboard:${NC}"
+    terraform output cloudwatch_dashboard_url
+    
+    echo -e "\n${CYAN}═══════════════════════════════════════════════════════${NC}\n"
+}
+
+terraform_destroy() {
+    local env=$1
+    
+    echo -e "${RED}⚠️  ATENÇÃO: Você está prestes a DESTRUIR a infraestrutura de $env${NC}"
+    echo -e "${RED}Isso irá deletar TODOS os recursos criados pelo Terraform${NC}\n"
+    
+    read -p "Digite 'DESTRUIR' para confirmar: " confirm
+    
+    if [ "$confirm" != "DESTRUIR" ]; then
+        log_info "Operação cancelada"
+        return 1
+    fi
+    
+    log_warning "Destruindo infraestrutura de $env..."
+    
+    cd "$TERRAFORM_DIR"
+    
+    terraform destroy -auto-approve
+    
+    log_success "Infraestrutura destruída"
+}
+
+# =============================================================================
+# FUNÇÕES DE BUILD DO APP
+# =============================================================================
+
+setup_app() {
+    log_info "Configurando aplicativo mobile..."
+    
+    cd "$PROJECT_ROOT"
+    
+    # Instalar dependências
+    if [ ! -d "node_modules" ]; then
+        log_info "Instalando dependências npm..."
+        npm install
+    else
+        log_info "Atualizando dependências npm..."
+        npm update
+    fi
+    
+    # Configurar EAS
+    if [ ! -f "eas.json" ]; then
+        log_warning "eas.json não encontrado, criando..."
+        # Script já criou, mas vamos garantir
+    fi
+    
+    # Pedir project ID se necessário
+    if ! grep -q '"projectId"' app.json; then
+        log_info "Configurando Expo project..."
+        read -p "Digite o Project ID do Expo (ou deixe em branco para criar novo): " project_id
+        
+        if [ -z "$project_id" ]; then
+            eas init
+        else
+            # Atualizar app.json
+            npx json -I -f app.json -e "this.expo.extra.eas.projectId='$project_id'"
+        fi
+    fi
+    
+    log_success "Aplicativo configurado"
+}
+
+build_app() {
+    local env=$1
+    local platform=$2
+    
+    log_info "Iniciando build do app para $platform ($env)..."
+    
+    cd "$PROJECT_ROOT"
+    
+    # Determinar profile
+    local profile
+    case $env in
+        dev)
+            profile="development"
+            ;;
+        staging)
+            profile="preview"
+            ;;
+        prod)
+            profile="production"
+            ;;
+        *)
+            log_error "Ambiente inválido: $env"
+            return 1
+            ;;
+    esac
+    
+    # Build
+    if [ "$platform" == "all" ]; then
+        log_info "Building para iOS e Android..."
+        eas build --profile "$profile" --platform all --non-interactive
+    else
+        log_info "Building para $platform..."
+        eas build --profile "$profile" --platform "$platform" --non-interactive
+    fi
+    
+    log_success "Build concluído!"
+    
+    # Mostrar URL do build
+    echo -e "\n${CYAN}═══════════════════════════════════════════════════════${NC}"
+    echo -e "${GREEN}📱 BUILD DISPONÍVEL${NC}"
+    echo -e "${CYAN}═══════════════════════════════════════════════════════${NC}"
+    echo -e "\nAcesse: ${YELLOW}https://expo.dev/accounts/[your-account]/projects/legaltech-app/builds${NC}\n"
+}
+
+submit_app() {
+    local platform=$1
+    
+    log_info "Submetendo app para $platform..."
+    
+    cd "$PROJECT_ROOT"
+    
+    eas submit --platform "$platform" --latest
+    
+    log_success "App submetido!"
+}
+
+# =============================================================================
+# FUNÇÕES DE STATUS
+# =============================================================================
+
+show_status() {
+    log_info "Verificando status dos recursos..."
+    
+    echo -e "\n${CYAN}╔═══════════════════════════════════════════════════════════════╗${NC}"
+    echo -e "${CYAN}║                      STATUS DOS RECURSOS                      ║${NC}"
+    echo -e "${CYAN}╚═══════════════════════════════════════════════════════════════╝${NC}\n"
+    
+    # AWS Resources
+    echo -e "${YELLOW}☁️  AWS Resources:${NC}\n"
+    
+    # ECS Clusters
+    echo -e "${BLUE}ECS Clusters:${NC}"
+    aws ecs list-clusters --query 'clusterArns[*]' --output table 2>/dev/null || echo "  Nenhum cluster encontrado"
+    
+    # RDS Instances
+    echo -e "\n${BLUE}RDS Clusters:${NC}"
+    aws rds describe-db-clusters --query 'DBClusters[*].[DBClusterIdentifier,Status]' --output table 2>/dev/null || echo "  Nenhum cluster encontrado"
+    
+    # S3 Buckets
+    echo -e "\n${BLUE}S3 Buckets (legaltech):${NC}"
+    aws s3 ls | grep legaltech || echo "  Nenhum bucket encontrado"
+    
+    # ALBs
+    echo -e "\n${BLUE}Application Load Balancers:${NC}"
+    aws elbv2 describe-load-balancers --query 'LoadBalancers[?contains(LoadBalancerName,legaltech)].{Name:LoadBalancerName,DNS:DNSName,State:State.Code}' --output table 2>/dev/null || echo "  Nenhum ALB encontrado"
+    
+    # Expo Builds
+    echo -e "\n${YELLOW}📱 Expo Builds:${NC}\n"
+    cd "$PROJECT_ROOT"
+    eas build:list --limit 5 2>/dev/null || echo "  Execute 'eas login' primeiro"
+    
+    echo ""
+}
+
+# =============================================================================
+# WORKFLOWS PRINCIPAIS
+# =============================================================================
+
+deploy_full() {
+    local env=$1
+    
+    log_info "Iniciando deploy completo para $env..."
+    
+    # 1. Verificar pré-requisitos
+    check_prerequisites || return 1
+    check_aws_credentials || return 1
+    check_expo_account || return 1
+    
+    # 2. Setup environment
+    setup_environment "$env"
+    
+    # 3. Deploy infraestrutura
+    terraform_init "$env"
+    terraform_plan "$env"
+    
+    read -p "Deseja aplicar o plano? (y/n): " apply
+    if [[ $apply == "y" ]]; then
+        terraform_apply "$env"
+    else
+        log_info "Deploy de infraestrutura cancelado"
+        return 1
+    fi
+    
+    # 4. Setup e build do app
+    setup_app
+    
+    read -p "Deseja fazer build do app? (y/n): " build
+    if [[ $build == "y" ]]; then
+        echo "Escolha a plataforma:"
+        echo "1) iOS"
+        echo "2) Android"
+        echo "3) Ambos"
+        read -p "Opção: " platform_choice
+        
+        case $platform_choice in
+            1) build_app "$env" "ios" ;;
+            2) build_app "$env" "android" ;;
+            3) build_app "$env" "all" ;;
+            *) log_error "Opção inválida" ;;
+        esac
+    fi
+    
+    log_success "Deploy completo finalizado!"
+}
+
+deploy_infrastructure_only() {
+    local env=$1
+    
+    check_prerequisites || return 1
+    check_aws_credentials || return 1
+    
+    setup_environment "$env"
+    terraform_init "$env"
+    terraform_plan "$env"
+    
+    read -p "Aplicar plano? (y/n): " apply
+    if [[ $apply == "y" ]]; then
+        terraform_apply "$env"
+    fi
+}
+
+deploy_app_only() {
+    local env=$1
+    
+    check_prerequisites || return 1
+    check_expo_account || return 1
+    
+    setup_app
+    
+    echo "Escolha a plataforma:"
+    echo "1) iOS"
+    echo "2) Android"
+    echo "3) Ambos"
+    read -p "Opção: " platform_choice
+    
+    case $platform_choice in
+        1) build_app "$env" "ios" ;;
+        2) build_app "$env" "android" ;;
+        3) build_app "$env" "all" ;;
+        *) log_error "Opção inválida" ;;
+    esac
+}
+
+# =============================================================================
+# MENU INTERATIVO
+# =============================================================================
+
+main_menu() {
+    while true; do
+        show_banner
+        show_menu
+        
+        read -p "Escolha uma opção: " choice
+        
+        case $choice in
+            1)
+                echo "Selecione o ambiente:"
+                echo "1) Development"
+                echo "2) Staging"
+                echo "3) Production"
+                read -p "Opção: " env_choice
+                
+                case $env_choice in
+                    1) deploy_full "dev" ;;
+                    2) deploy_full "staging" ;;
+                    3) deploy_full "prod" ;;
+                    *) log_error "Opção inválida" ;;
+                esac
+                ;;
+            2)
+                echo "Selecione o ambiente:"
+                echo "1) Development"
+                echo "2) Staging"
+                echo "3) Production"
+                read -p "Opção: " env_choice
+                
+                case $env_choice in
+                    1) deploy_infrastructure_only "dev" ;;
+                    2) deploy_infrastructure_only "staging" ;;
+                    3) deploy_infrastructure_only "prod" ;;
+                    *) log_error "Opção inválida" ;;
+                esac
+                ;;
+            3)
+                echo "Selecione o ambiente:"
+                echo "1) Development"
+                echo "2) Staging"
+                echo "3) Production"
+                read -p "Opção: " env_choice
+                
+                case $env_choice in
+                    1) deploy_app_only "dev" ;;
+                    2) deploy_app_only "staging" ;;
+                    3) deploy_app_only "prod" ;;
+                    *) log_error "Opção inválida" ;;
+                esac
+                ;;
+            4)
+                check_prerequisites
+                setup_app
+                ;;
+            5)
+                deploy_full "dev"
+                ;;
+            6)
+                deploy_full "staging"
+                ;;
+            7)
+                deploy_full "prod"
+                ;;
+            8)
+                echo "Selecione o ambiente para destruir:"
+                echo "1) Development"
+                echo "2) Staging"
+                echo "3) Production"
+                read -p "Opção: " env_choice
+                
+                case $env_choice in
+                    1) terraform_destroy "dev" ;;
+                    2) terraform_destroy "staging" ;;
+                    3) terraform_destroy "prod" ;;
+                    *) log_error "Opção inválida" ;;
+                esac
+                ;;
+            9)
+                show_status
+                ;;
+            0)
+                log_info "Saindo..."
+                exit 0
+                ;;
+            *)
+                log_error "Opção inválida"
+                ;;
+        esac
+        
+        echo ""
+        read -p "Pressione ENTER para continuar..."
+    done
+}
+
+# =============================================================================
+# EXECUÇÃO
+# =============================================================================
+
+# Limpar log anterior
+> "$LOG_FILE"
+
+# Verificar se é execução com argumentos ou interativa
+if [ $# -eq 0 ]; then
+    # Modo interativo
+    main_menu
+else
+    # Modo com argumentos
+    case $1 in
+        deploy-full)
+            deploy_full "${2:-dev}"
+            ;;
+        deploy-infra)
+            deploy_infrastructure_only "${2:-dev}"
+            ;;
+        deploy-app)
+            deploy_app_only "${2:-dev}"
+            ;;
+        setup)
+            check_prerequisites
+            setup_app
+            ;;
+        status)
+            show_status
+            ;;
+        destroy)
+            terraform_destroy "${2:-dev}"
+            ;;
+        *)
+            echo "Uso: $0 [comando] [ambiente]"
+            echo ""
+            echo "Comandos:"
+            echo "  deploy-full    - Deploy completo (infra + app)"
+            echo "  deploy-infra   - Deploy apenas infraestrutura"
+            echo "  deploy-app     - Deploy apenas app"
+            echo "  setup          - Setup inicial"
+            echo "  status         - Mostrar status"
+            echo "  destroy        - Destruir infraestrutura"
+            echo ""
+            echo "Ambientes: dev, staging, prod"
+            echo ""
+            echo "Exemplos:"
+            echo "  $0 deploy-full prod"
+            echo "  $0 deploy-app staging"
+            echo "  $0 status"
+            echo ""
+            echo "Sem argumentos: Modo interativo"
+            ;;
+    esac
+fi
