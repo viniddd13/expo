@@ -20,6 +20,8 @@ const jestConfig = {
     '^nanoid/index.browser.js$': '<rootDir>/node_modules/nanoid/index.browser.cjs',
     '^nanoid$': '<rootDir>/node_modules/nanoid/index.cjs',
     '^nanoid/non-secure$': '<rootDir>/node_modules/nanoid/non-secure/index.cjs',
+    // c15t (used by our cookie consent) bundles CSS modules that jsdom cannot parse
+    '^@c15t/react$': '<rootDir>/jest/__mocks__/c15t-react.cjs',
   },
   transform: {},
   extensionsToTreatAsEsm: ['.ts', '.tsx'],
