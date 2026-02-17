@@ -113,15 +113,15 @@ describe('client', () => {
       expect(res.metadata.performConstantFolding).toBe(true);
       expect(res.metadata.loaderReference).toBe('/app/index');
       expect(res.code).toMatchInlineSnapshot(`
-      "import { useLoaderData } from 'expo-router';
-      import { jsx as _jsx } from "react/jsx-runtime";
-      export default function Index() {
-        const data = useLoaderData();
-        return /*#__PURE__*/_jsx("div", {
-          children: data.data
-        });
-      }"
-    `);
+              "import { useLoaderData } from 'expo-router';
+              import { jsx as _jsx } from "react/jsx-runtime";
+              export default function Index() {
+                const data = useLoaderData();
+                return /*#__PURE__*/_jsx("div", {
+                  children: data.data
+                });
+              }"
+          `);
     });
 
     it('removes `export function loader() {}`', () => {
@@ -144,15 +144,15 @@ describe('client', () => {
       expect(res.metadata.performConstantFolding).toBe(true);
       expect(res.metadata.loaderReference).toBe('/app/index');
       expect(res.code).toMatchInlineSnapshot(`
-      "import { useLoaderData } from 'expo-router';
-      import { jsx as _jsx } from "react/jsx-runtime";
-      export default function Index() {
-        const data = useLoaderData();
-        return /*#__PURE__*/_jsx("div", {
-          children: data.data
-        });
-      }"
-    `);
+              "import { useLoaderData } from 'expo-router';
+              import { jsx as _jsx } from "react/jsx-runtime";
+              export default function Index() {
+                const data = useLoaderData();
+                return /*#__PURE__*/_jsx("div", {
+                  children: data.data
+                });
+              }"
+          `);
     });
 
     it('removes `export const loader = async () => {}`', () => {
@@ -175,15 +175,15 @@ describe('client', () => {
       expect(res.metadata.performConstantFolding).toBe(true);
       expect(res.metadata.loaderReference).toBe('/app/index');
       expect(res.code).toMatchInlineSnapshot(`
-      "import { useLoaderData } from 'expo-router';
-      import { jsx as _jsx } from "react/jsx-runtime";
-      export default function Index() {
-        const data = useLoaderData();
-        return /*#__PURE__*/_jsx("div", {
-          children: data.data
-        });
-      }"
-    `);
+              "import { useLoaderData } from 'expo-router';
+              import { jsx as _jsx } from "react/jsx-runtime";
+              export default function Index() {
+                const data = useLoaderData();
+                return /*#__PURE__*/_jsx("div", {
+                  children: data.data
+                });
+              }"
+          `);
     });
 
     it('removes `export const loader = () => {}`', () => {
@@ -206,15 +206,15 @@ describe('client', () => {
       expect(res.metadata.performConstantFolding).toBe(true);
       expect(res.metadata.loaderReference).toBe('/app/index');
       expect(res.code).toMatchInlineSnapshot(`
-      "import { useLoaderData } from 'expo-router';
-      import { jsx as _jsx } from "react/jsx-runtime";
-      export default function Index() {
-        const data = useLoaderData();
-        return /*#__PURE__*/_jsx("div", {
-          children: data.data
-        });
-      }"
-    `);
+              "import { useLoaderData } from 'expo-router';
+              import { jsx as _jsx } from "react/jsx-runtime";
+              export default function Index() {
+                const data = useLoaderData();
+                return /*#__PURE__*/_jsx("div", {
+                  children: data.data
+                });
+              }"
+          `);
     });
 
     it('removes `export const loader = async function() {}`', () => {
@@ -237,15 +237,15 @@ describe('client', () => {
       expect(res.metadata.performConstantFolding).toBe(true);
       expect(res.metadata.loaderReference).toBe('/app/index');
       expect(res.code).toMatchInlineSnapshot(`
-      "import { useLoaderData } from 'expo-router';
-      import { jsx as _jsx } from "react/jsx-runtime";
-      export default function Index() {
-        const data = useLoaderData();
-        return /*#__PURE__*/_jsx("div", {
-          children: data.data
-        });
-      }"
-    `);
+              "import { useLoaderData } from 'expo-router';
+              import { jsx as _jsx } from "react/jsx-runtime";
+              export default function Index() {
+                const data = useLoaderData();
+                return /*#__PURE__*/_jsx("div", {
+                  children: data.data
+                });
+              }"
+          `);
     });
 
     it('removes `export const loader = function() {}`', () => {
@@ -268,15 +268,15 @@ describe('client', () => {
       expect(res.metadata.performConstantFolding).toBe(true);
       expect(res.metadata.loaderReference).toBe('/app/index');
       expect(res.code).toMatchInlineSnapshot(`
-      "import { useLoaderData } from 'expo-router';
-      import { jsx as _jsx } from "react/jsx-runtime";
-      export default function Index() {
-        const data = useLoaderData();
-        return /*#__PURE__*/_jsx("div", {
-          children: data.data
-        });
-      }"
-    `);
+              "import { useLoaderData } from 'expo-router';
+              import { jsx as _jsx } from "react/jsx-runtime";
+              export default function Index() {
+                const data = useLoaderData();
+                return /*#__PURE__*/_jsx("div", {
+                  children: data.data
+                });
+              }"
+          `);
     });
   });
 
@@ -303,18 +303,18 @@ describe('client', () => {
       expect(res.metadata.performConstantFolding).toBe(true);
       expect(res.metadata.loaderReference).toBe('/app/index');
       expect(res.code).toMatchInlineSnapshot(`
-      "import { useLoaderData } from 'expo-router';
-      import { jsx as _jsx } from "react/jsx-runtime";
-      export const unstable_settings = {
-        anchor: 'index'
-      };
-      export default function Index() {
-        const data = useLoaderData();
-        return /*#__PURE__*/_jsx("div", {
-          children: data.data
-        });
-      }"
-    `);
+              "import { useLoaderData } from 'expo-router';
+              import { jsx as _jsx } from "react/jsx-runtime";
+              export const unstable_settings = {
+                anchor: 'index'
+              };
+              export default function Index() {
+                const data = useLoaderData();
+                return /*#__PURE__*/_jsx("div", {
+                  children: data.data
+                });
+              }"
+          `);
     });
 
     it('preserves multiple exports in same declaration', () => {
@@ -341,23 +341,23 @@ describe('client', () => {
       expect(res.metadata.performConstantFolding).toBe(true);
       expect(res.metadata.loaderReference).toBe('/app/index');
       expect(res.code).toMatchInlineSnapshot(`
-      "import { useLoaderData } from 'expo-router';
-      import { jsx as _jsx } from "react/jsx-runtime";
-      export const unstable_settings = {
-          anchor: 'index'
-        },
-        generateStaticParams = () => [{
-          id: '1'
-        }, {
-          id: '2'
-        }];
-      export default function Index() {
-        const data = useLoaderData();
-        return /*#__PURE__*/_jsx("div", {
-          children: data.data
-        });
-      }"
-    `);
+              "import { useLoaderData } from 'expo-router';
+              import { jsx as _jsx } from "react/jsx-runtime";
+              export const unstable_settings = {
+                  anchor: 'index'
+                },
+                generateStaticParams = () => [{
+                  id: '1'
+                }, {
+                  id: '2'
+                }];
+              export default function Index() {
+                const data = useLoaderData();
+                return /*#__PURE__*/_jsx("div", {
+                  children: data.data
+                });
+              }"
+          `);
     });
   });
 
@@ -375,13 +375,13 @@ describe('client', () => {
       expect(res.metadata.performConstantFolding).toBeUndefined();
       expect(res.metadata.loaderReference).toBeUndefined();
       expect(res.code).toMatchInlineSnapshot(`
-      "import { jsx as _jsx } from "react/jsx-runtime";
-      export default function Index() {
-        return /*#__PURE__*/_jsx("div", {
-          children: "Index"
-        });
-      }"
-    `);
+              "import { jsx as _jsx } from "react/jsx-runtime";
+              export default function Index() {
+                return /*#__PURE__*/_jsx("div", {
+                  children: "Index"
+                });
+              }"
+          `);
     });
 
     it('handles files with only loader export', () => {
@@ -424,23 +424,23 @@ describe('client', () => {
 
       expect(res.metadata.performConstantFolding).toBeUndefined();
       expect(res.code).toMatchInlineSnapshot(`
-      "import { jsx as _jsx } from "react/jsx-runtime";
-      export function loader() {
-        return {
-          data: 'test'
-        };
-      }
-      function noop() {
-        return;
-      }
-      export function MyComponent() {
-        noop();
-        const data = loader();
-        return /*#__PURE__*/_jsx("div", {
-          children: data.data
-        });
-      }"
-    `);
+              "import { jsx as _jsx } from "react/jsx-runtime";
+              export function loader() {
+                return {
+                  data: 'test'
+                };
+              }
+              function noop() {
+                return;
+              }
+              export function MyComponent() {
+                noop();
+                const data = loader();
+                return /*#__PURE__*/_jsx("div", {
+                  children: data.data
+                });
+              }"
+          `);
     });
   });
 });
@@ -448,8 +448,8 @@ describe('client', () => {
 // NOTE(@hassankhan): Server bundles preserve loaders for SSG. A followup is required to strip
 // loaders from server bundles.
 describe('server', () => {
-  describe('preserves exports', () => {
-    it('preserves loader exports', () => {
+  describe('removes loader exports', () => {
+    it('removes `export async function loader() {}`', () => {
       const res = transformTest(
         `
       import { useLoaderData } from 'expo-router';
@@ -463,28 +463,180 @@ describe('server', () => {
         return <div>{data.data}</div>;
       }
     `,
-        { bundleType: 'server' }
+        { bundleType: 'client' }
       );
 
-      expect(res.metadata.performConstantFolding).toBeUndefined();
-      expect(res.metadata.loaderReference).toBeUndefined();
+      expect(res.metadata.performConstantFolding).toBe(true);
+      expect(res.metadata.loaderReference).toBe('/app/index');
       expect(res.code).toMatchInlineSnapshot(`
-      "import { useLoaderData } from 'expo-router';
-      import { jsx as _jsx } from "react/jsx-runtime";
-      export async function loader() {
-        return {
-          data: 'test'
-        };
-      }
-      export default function Index() {
-        const data = useLoaderData();
-        return /*#__PURE__*/_jsx("div", {
-          children: data.data
-        });
-      }"
-    `);
+              "import { useLoaderData } from 'expo-router';
+              import { jsx as _jsx } from "react/jsx-runtime";
+              export default function Index() {
+                const data = useLoaderData();
+                return /*#__PURE__*/_jsx("div", {
+                  children: data.data
+                });
+              }"
+          `);
     });
 
+    it('removes `export function loader() {}`', () => {
+      const res = transformTest(
+        `
+      import { useLoaderData } from 'expo-router';
+
+      export function loader() {
+        return { data: 'test' };
+      }
+
+      export default function Index() {
+        const data = useLoaderData();
+        return <div>{data.data}</div>;
+      }
+    `,
+        { bundleType: 'client' }
+      );
+
+      expect(res.metadata.performConstantFolding).toBe(true);
+      expect(res.metadata.loaderReference).toBe('/app/index');
+      expect(res.code).toMatchInlineSnapshot(`
+              "import { useLoaderData } from 'expo-router';
+              import { jsx as _jsx } from "react/jsx-runtime";
+              export default function Index() {
+                const data = useLoaderData();
+                return /*#__PURE__*/_jsx("div", {
+                  children: data.data
+                });
+              }"
+          `);
+    });
+
+    it('removes `export const loader = async () => {}`', () => {
+      const res = transformTest(
+        `
+      import { useLoaderData } from 'expo-router';
+
+      export const loader = async () => {
+        return { data: 'test' };
+      };
+
+      export default function Index() {
+        const data = useLoaderData();
+        return <div>{data.data}</div>;
+      }
+    `,
+        { bundleType: 'client' }
+      );
+
+      expect(res.metadata.performConstantFolding).toBe(true);
+      expect(res.metadata.loaderReference).toBe('/app/index');
+      expect(res.code).toMatchInlineSnapshot(`
+              "import { useLoaderData } from 'expo-router';
+              import { jsx as _jsx } from "react/jsx-runtime";
+              export default function Index() {
+                const data = useLoaderData();
+                return /*#__PURE__*/_jsx("div", {
+                  children: data.data
+                });
+              }"
+          `);
+    });
+
+    it('removes `export const loader = () => {}`', () => {
+      const res = transformTest(
+        `
+      import { useLoaderData } from 'expo-router';
+
+      export const loader = () => {
+        return { data: 'test' };
+      };
+
+      export default function Index() {
+        const data = useLoaderData();
+        return <div>{data.data}</div>;
+      }
+    `,
+        { bundleType: 'client' }
+      );
+
+      expect(res.metadata.performConstantFolding).toBe(true);
+      expect(res.metadata.loaderReference).toBe('/app/index');
+      expect(res.code).toMatchInlineSnapshot(`
+              "import { useLoaderData } from 'expo-router';
+              import { jsx as _jsx } from "react/jsx-runtime";
+              export default function Index() {
+                const data = useLoaderData();
+                return /*#__PURE__*/_jsx("div", {
+                  children: data.data
+                });
+              }"
+          `);
+    });
+
+    it('removes `export const loader = async function() {}`', () => {
+      const res = transformTest(
+        `
+      import { useLoaderData } from 'expo-router';
+
+      export const loader = async function() {
+        return { data: 'test' };
+      };
+
+      export default function Index() {
+        const data = useLoaderData();
+        return <div>{data.data}</div>;
+      }
+    `,
+        { bundleType: 'client' }
+      );
+
+      expect(res.metadata.performConstantFolding).toBe(true);
+      expect(res.metadata.loaderReference).toBe('/app/index');
+      expect(res.code).toMatchInlineSnapshot(`
+              "import { useLoaderData } from 'expo-router';
+              import { jsx as _jsx } from "react/jsx-runtime";
+              export default function Index() {
+                const data = useLoaderData();
+                return /*#__PURE__*/_jsx("div", {
+                  children: data.data
+                });
+              }"
+          `);
+    });
+
+    it('removes `export const loader = function() {}`', () => {
+      const res = transformTest(
+        `
+      import { useLoaderData } from 'expo-router';
+
+      export const loader = function() {
+        return { data: 'test' };
+      };
+
+      export default function Index() {
+        const data = useLoaderData();
+        return <div>{data.data}</div>;
+      }
+    `,
+        { bundleType: 'client' }
+      );
+
+      expect(res.metadata.performConstantFolding).toBe(true);
+      expect(res.metadata.loaderReference).toBe('/app/index');
+      expect(res.code).toMatchInlineSnapshot(`
+              "import { useLoaderData } from 'expo-router';
+              import { jsx as _jsx } from "react/jsx-runtime";
+              export default function Index() {
+                const data = useLoaderData();
+                return /*#__PURE__*/_jsx("div", {
+                  children: data.data
+                });
+              }"
+          `);
+    });
+  });
+
+  describe('preserves exports', () => {
     it('preserves non-loader exports', () => {
       const res = transformTest(
         `
@@ -501,23 +653,19 @@ describe('server', () => {
         { bundleType: 'server' }
       );
 
-      expect(res.metadata.performConstantFolding).toBeUndefined();
+      expect(res.metadata.performConstantFolding).toBe(true);
+      expect(res.metadata.loaderReference).toBe('/app/index');
       expect(res.code).toMatchInlineSnapshot(`
-      "import { jsx as _jsx } from "react/jsx-runtime";
-      export async function loader() {
-        return {
-          data: 'test'
+        "import { jsx as _jsx } from "react/jsx-runtime";
+        export const unstable_settings = {
+          anchor: 'index'
         };
-      }
-      export const unstable_settings = {
-        anchor: 'index'
-      };
-      export default function Index() {
-        return /*#__PURE__*/_jsx("div", {
-          children: "Index"
-        });
-      }"
-    `);
+        export default function Index() {
+          return /*#__PURE__*/_jsx("div", {
+            children: "Index"
+          });
+        }"
+      `);
     });
   });
 });
@@ -544,13 +692,13 @@ describe('loader', () => {
       expect(res.metadata.performConstantFolding).toBe(true);
       expect(res.metadata.loaderReference).toBe('/app/index');
       expect(res.code).toMatchInlineSnapshot(`
-      "import { useLoaderData } from 'expo-router';
-      export async function loader() {
-        return {
-          data: 'test'
-        };
-      }"
-    `);
+              "import { useLoaderData } from 'expo-router';
+              export async function loader() {
+                return {
+                  data: 'test'
+                };
+              }"
+          `);
     });
 
     it('removes other named exports in loader bundles', () => {
@@ -576,12 +724,12 @@ describe('loader', () => {
       expect(res.metadata.performConstantFolding).toBe(true);
       expect(res.metadata.loaderReference).toBe('/app/index');
       expect(res.code).toMatchInlineSnapshot(`
-      "export async function loader() {
-        return {
-          data: 'test'
-        };
-      }"
-    `);
+              "export async function loader() {
+                return {
+                  data: 'test'
+                };
+              }"
+          `);
     });
   });
 
@@ -603,12 +751,12 @@ describe('loader', () => {
       expect(res.metadata.performConstantFolding).toBe(true);
       expect(res.metadata.loaderReference).toBe('/app/index');
       expect(res.code).toMatchInlineSnapshot(`
-      "export function loader() {
-        return {
-          data: 'test'
-        };
-      }"
-    `);
+              "export function loader() {
+                return {
+                  data: 'test'
+                };
+              }"
+          `);
     });
 
     it('preserves loader const arrow function', () => {
@@ -628,12 +776,12 @@ describe('loader', () => {
       expect(res.metadata.performConstantFolding).toBe(true);
       expect(res.metadata.loaderReference).toBe('/app/index');
       expect(res.code).toMatchInlineSnapshot(`
-      "export const loader = async () => {
-        return {
-          data: 'test'
-        };
-      };"
-    `);
+              "export const loader = async () => {
+                return {
+                  data: 'test'
+                };
+              };"
+          `);
     });
 
     it('preserves loader const function expression', () => {
@@ -653,12 +801,12 @@ describe('loader', () => {
       expect(res.metadata.performConstantFolding).toBe(true);
       expect(res.metadata.loaderReference).toBe('/app/index');
       expect(res.code).toMatchInlineSnapshot(`
-      "export const loader = function () {
-        return {
-          data: 'test'
-        };
-      };"
-    `);
+              "export const loader = function () {
+                return {
+                  data: 'test'
+                };
+              };"
+          `);
     });
 
     it('extracts loader from multi-declaration export', () => {
@@ -682,12 +830,12 @@ describe('loader', () => {
       expect(res.metadata.performConstantFolding).toBe(true);
       expect(res.metadata.loaderReference).toBe('/app/index');
       expect(res.code).toMatchInlineSnapshot(`
-      "export const loader = async () => {
-        return {
-          data: 'test'
-        };
-      };"
-    `);
+              "export const loader = async () => {
+                return {
+                  data: 'test'
+                };
+              };"
+          `);
     });
 
     it('preserves loader and its dependencies', () => {
@@ -716,22 +864,22 @@ describe('loader', () => {
       expect(res.metadata.performConstantFolding).toBe(true);
       expect(res.metadata.loaderReference).toBe('/app/index');
       expect(res.code).toMatchInlineSnapshot(`
-      "import { fetchData } from './api';
-      const CACHE_TTL = 3600;
-      async function getData(id) {
-        return fetchData(id, {
-          ttl: CACHE_TTL
-        });
-      }
-      export async function loader({
-        params
-      }) {
-        const data = await getData(params.id);
-        return {
-          data
-        };
-      }"
-    `);
+              "import { fetchData } from './api';
+              const CACHE_TTL = 3600;
+              async function getData(id) {
+                return fetchData(id, {
+                  ttl: CACHE_TTL
+                });
+              }
+              export async function loader({
+                params
+              }) {
+                const data = await getData(params.id);
+                return {
+                  data
+                };
+              }"
+          `);
     });
   });
 
@@ -771,18 +919,18 @@ describe('loader', () => {
       expect(res.metadata.performConstantFolding).toBeUndefined();
       expect(res.metadata.loaderReference).toBeUndefined();
       expect(res.code).toMatchInlineSnapshot(`
-      "import { jsx as _jsx } from "react/jsx-runtime";
-      export function loader() {
-        return {
-          data: 'test'
-        };
-      }
-      export default function MyComponent() {
-        return /*#__PURE__*/_jsx("div", {
-          children: "Component"
-        });
-      }"
-    `);
+              "import { jsx as _jsx } from "react/jsx-runtime";
+              export function loader() {
+                return {
+                  data: 'test'
+                };
+              }
+              export default function MyComponent() {
+                return /*#__PURE__*/_jsx("div", {
+                  children: "Component"
+                });
+              }"
+          `);
     });
   });
 });
